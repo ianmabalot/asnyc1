@@ -31,7 +31,10 @@ namespace AsyncDemo1
         {
             this.executeSync = new System.Windows.Forms.Button();
             this.executeAsync = new System.Windows.Forms.Button();
-            this.lblResult = new System.Windows.Forms.Label();
+            this.executeParallelAsync = new System.Windows.Forms.Button();
+            this.cancelOperation = new System.Windows.Forms.Button();
+            this.dashboardProgress = new System.Windows.Forms.ProgressBar();
+            this.lblResult = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // executeSync
@@ -52,22 +55,52 @@ namespace AsyncDemo1
             this.executeAsync.TabIndex = 1;
             this.executeAsync.Text = "Asyncronous";
             this.executeAsync.UseVisualStyleBackColor = true;
+            this.executeAsync.Click += new System.EventHandler(this.executeAsync_Click);
+            // 
+            // executeParallelAsync
+            // 
+            this.executeParallelAsync.Location = new System.Drawing.Point(90, 70);
+            this.executeParallelAsync.Name = "executeParallelAsync";
+            this.executeParallelAsync.Size = new System.Drawing.Size(319, 23);
+            this.executeParallelAsync.TabIndex = 3;
+            this.executeParallelAsync.Text = "Parallel Asyncronous";
+            this.executeParallelAsync.UseVisualStyleBackColor = true;
+            this.executeParallelAsync.Click += new System.EventHandler(this.executeParallelAsync_Click);
+            // 
+            // cancelOperation
+            // 
+            this.cancelOperation.Location = new System.Drawing.Point(90, 99);
+            this.cancelOperation.Name = "cancelOperation";
+            this.cancelOperation.Size = new System.Drawing.Size(319, 23);
+            this.cancelOperation.TabIndex = 4;
+            this.cancelOperation.Text = "Cancel Operation";
+            this.cancelOperation.UseVisualStyleBackColor = true;
+            this.cancelOperation.Click += new System.EventHandler(this.cancelOperation_Click);
+            // 
+            // dashboardProgress
+            // 
+            this.dashboardProgress.Location = new System.Drawing.Point(90, 128);
+            this.dashboardProgress.Name = "dashboardProgress";
+            this.dashboardProgress.Size = new System.Drawing.Size(319, 23);
+            this.dashboardProgress.TabIndex = 5;
             // 
             // lblResult
             // 
-            this.lblResult.AutoSize = true;
-            this.lblResult.Location = new System.Drawing.Point(87, 77);
+            this.lblResult.Location = new System.Drawing.Point(415, 14);
+            this.lblResult.Multiline = true;
             this.lblResult.Name = "lblResult";
-            this.lblResult.Size = new System.Drawing.Size(37, 13);
-            this.lblResult.TabIndex = 2;
-            this.lblResult.Text = "Result";
+            this.lblResult.Size = new System.Drawing.Size(478, 321);
+            this.lblResult.TabIndex = 6;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 248);
+            this.ClientSize = new System.Drawing.Size(944, 373);
             this.Controls.Add(this.lblResult);
+            this.Controls.Add(this.dashboardProgress);
+            this.Controls.Add(this.cancelOperation);
+            this.Controls.Add(this.executeParallelAsync);
             this.Controls.Add(this.executeAsync);
             this.Controls.Add(this.executeSync);
             this.Name = "Form1";
@@ -81,7 +114,10 @@ namespace AsyncDemo1
 
         private System.Windows.Forms.Button executeSync;
         private System.Windows.Forms.Button executeAsync;
-        private System.Windows.Forms.Label lblResult;
+        private System.Windows.Forms.Button executeParallelAsync;
+        private System.Windows.Forms.Button cancelOperation;
+        private System.Windows.Forms.ProgressBar dashboardProgress;
+        private System.Windows.Forms.TextBox lblResult;
     }
 }
 

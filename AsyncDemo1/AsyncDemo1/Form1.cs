@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,6 +14,8 @@ namespace AsyncDemo1
 {
     public partial class Form1 : Form
     {
+        CancellationTokenSource cts = new CancellationTokenSource(); 
+
         public Form1()
         {
             InitializeComponent();
@@ -22,7 +25,8 @@ namespace AsyncDemo1
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            RunDownloadSync(); //run this method syncronously
+            var results = DemoMethods.RunDownloadParallelSync(); //run this method syncronously
+            PrintResults(results);
 
             watch.Stop();
 
@@ -31,47 +35,62 @@ namespace AsyncDemo1
             lblResult.Text += $"Total execution time: {elapseMs}";
         }
 
-        private List<string> PrepData()
+        private void PrintResults(List<WebsiteDataModel> results)
         {
-            List<string> output = new List<string>();
-
             lblResult.Text = "";
-
-            output.Add("https://www.yahoo.com");
-            output.Add("https://www.google.com");
-            output.Add("https://www.microsoft.com");
-            output.Add("https://www.cnn.com");
-            output.Add("https://www.codeproject.com");
-            output.Add("https://www.stackoverflow.com");
-
-            return output;
-        }
-
-        private void RunDownloadSync()
-        {
-            List<string> websites = PrepData();
-
-            foreach (string site in websites)
+            foreach(var item in results)
             {
-                WebsiteDataModel results = DownloadWebsite(site);
-                ReportWebsiteInfo(results);
+                lblResult.Text += $"{item.WebsiteUrl} downlodead: {item.WebsiteData.Length} characters long. {Environment.NewLine}";
             }
         }
 
-        private WebsiteDataModel DownloadWebsite(string websiteURL)
+        private async void executeAsync_Click(object sender, EventArgs e)
         {
-            WebsiteDataModel output = new WebsiteDataModel();
-            WebClient client = new WebClient();
+            Progress<ProgressReportModel> progress = new Progress<ProgressReportModel>();
+            progress.ProgressChanged += ReportProgress;
 
-            output.WebsiteUrl = websiteURL;
-            output.WebsiteData = client.DownloadString(websiteURL);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            return output;
+            try
+            {
+                var results = await DemoMethods.RunDownloadAsync(progress, cts.Token);
+                PrintResults(results);
+            }
+            catch (OperationCanceledException)
+            {
+                lblResult.Text += $"The async download was cancelled {Environment.NewLine}";
+            }
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            lblResult.Text += $"Total execution time: {elapsedMs}";
         }
 
-        private void ReportWebsiteInfo(WebsiteDataModel data)
+        private void ReportProgress(object sender, ProgressReportModel e)
         {
-            lblResult.Text += $"{data.WebsiteUrl} downloaded: {data.WebsiteData.Length} characters long. {Environment.NewLine}";
+            dashboardProgress.Value = e.PercentageComplete;
+            PrintResults(e.SitesDownloaded);
+        }
+
+        private void cancelOperation_Click(object sender, EventArgs e)
+        {
+            cts.Cancel();
+        }
+
+        private async void executeParallelAsync_Click(object sender, EventArgs e)
+        {
+            Progress<ProgressReportModel> progress = new Progress<ProgressReportModel>();
+            progress.ProgressChanged += ReportProgress;
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            var results = await DemoMethods.RunDownloadParallelAsyncV2(progress);
+            PrintResults(results);
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            lblResult.Text += $"Total execution time: {elapsedMs}";
         }
     }
 }
